@@ -21,9 +21,12 @@ def get(endpoint, params=None):
 	# API rejects requests that are too frequent
 	time.sleep(4)
 	response = requests.get(
-		f"{api_root}{endpoint}",
-		headers={"X-Api-Key": api_key}, params=params, timeout=60,
+	f"{api_root}{endpoint}",
+	headers={
+		"X-Api-Key": api_key},
+		params=params
 	)
+	# Check valid response status
 	response.raise_for_status()
 	return response.json()
 
@@ -49,6 +52,7 @@ def get_all(endpoint, filters):
 		if page * 250 >= total:
 			return list(records.values())
 
+		# API Documentation recommends timestamping for bulk downloads
 		if page == 20:
 			stamp = pd.Timestamp(batch[-1]["attributes"]["lastModifiedDate"])
 			local = stamp.tz_convert("America/New_York")
